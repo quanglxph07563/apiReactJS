@@ -11,6 +11,7 @@ class Products extends Model
         'name_product',
         'images',
         'price',
+        'sale',
         'amount',
         'detail',
         'view',
@@ -19,6 +20,6 @@ class Products extends Model
 
     public function category()
     {
-        return $this->belongsTo('App\Category');
+        return $this->belongsTo('App\Category','idCategory','id');
     }
 }

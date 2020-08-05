@@ -16,7 +16,34 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return ProductResource::collection(Products::all());      
+        $pardam = request()->all();
+        // return $pardam['page_size']=='null';
+        $query_pardam=[];
+        $query_pardam['page_size'] = ($pardam['page_size']!='null')?$pardam['page_size']:4;
+        $query_pardam['key'] = ($pardam['key']!='')?$pardam['key']:null;
+        $query_pardam['iddm'] = ($pardam['iddm']!='null')?$pardam['iddm']:null;
+
+        $queryBulder = Products::query(); 
+        if (isset($query_pardam['iddm']) && $query_pardam['iddm'] != null) {
+            $queryBulder->where('idCategory', '=', $query_pardam['iddm']);
+        }
+        if (isset($query_pardam['key']) && $query_pardam['key'] != null) {
+            $queryBulder->where('name_product', 'like', '%'.$query_pardam['key'].'%');
+        }
+        $resurt = $queryBulder->paginate($query_pardam['page_size']);
+        foreach ($resurt as $value) {
+            if($value->idCategory == 0){
+                $value->tendm ='Chưa có danh mục';
+            }
+            else{
+                if ($value->category==null) {
+                    $value->tendm ='Chưa có danh mục';
+                }else{
+                    $value->tendm =$value->category->name_category;
+                }
+            }
+        }    
+        return $resurt;
     }
 
     /**
@@ -63,5 +90,32 @@ class ProductController extends Controller
     public function destroy($id)
     {
         return  Products::where('id', $id)->delete();
+    }
+
+    public function searchKeyProduct($key)
+    {
+        if($key == 'trong'){
+            return Products::get();   
+        }
+        return Products::where('name_product', 'LIKE','%'.$key.'%')->get();
+    }
+
+    public function getProductClinet($id)
+    {
+        if($id>0)
+        {
+            return Products::where('idCategory',$id)->paginate(5);
+        }
+        else
+        {
+            return  Products::paginate(5);
+        }
+    }
+
+    public function deleteMultipleProducts(Request $request)
+    {
+        $listId = $request->all();
+        Products::whereIn('id', $listId)->delete();
+        return 'Xóa thành công';
     }
 }

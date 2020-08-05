@@ -18,3 +18,12 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::apiResource('/products', 'Api\ProductController');
+Route::get('products/search/{key}', 'Api\ProductController@searchKeyProduct');
+Route::get('products/get-product-client/{id}', 'Api\ProductController@getProductClinet');
+Route::post('products/delete-multiple-products', 'Api\ProductController@deleteMultipleProducts');
+
+
+Route::apiResource('/category', 'Api\CategoryController');
+Route::get('/get-all-category', 'Api\CategoryController@getAllCateGory');
+
+
