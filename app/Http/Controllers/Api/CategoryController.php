@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Http\Resources\CategoryResource;
 use App\Http\Requests\Category\insertRequest;
+use App\Http\Requests\Category\updateCategory;
+
 class CategoryController extends Controller
 {
     /**
@@ -62,9 +64,11 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(updateCategory $updateCategory, $id)
     {
-        return Category::where('id', $id)->update($request->all());
+        unset($updateCategory['id_danhmuc']);
+
+        return Category::where('id', $id)->update($updateCategory->all());
     }
 
     /**

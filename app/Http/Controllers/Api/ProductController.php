@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Products;
 use App\Http\Resources\ProductResource;
+use App\Http\Requests\Product\storeProduct;
+use App\Http\Requests\Product\updateProduct;
 
 class ProductController extends Controller
 {
@@ -52,7 +54,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(storeProduct $request)
     {
         $data = Products::create($request->all());
         return response()->json($data, 200);  
@@ -76,9 +78,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(updateProduct $updateProduct, $id)
     {
-        return Products::where('id', $id)->update($request->all());
+        return Products::where('id', $id)->update($updateProduct->all());
     }
 
     /**
@@ -104,11 +106,11 @@ class ProductController extends Controller
     {
         if($id>0)
         {
-            return Products::where('idCategory',$id)->paginate(5);
+            return Products::where('idCategory',$id)->paginate(8);
         }
         else
         {
-            return  Products::paginate(5);
+            return  Products::paginate(8);
         }
     }
 
@@ -117,5 +119,41 @@ class ProductController extends Controller
         $listId = $request->all();
         Products::whereIn('id', $listId)->delete();
         return 'Xóa thành công';
+    }
+
+    public function getProductPageCuaHang()
+    { 
+
+        $pardam =  request()->all();
+        $query_pardam=[];
+        $query_pardam['key'] = ($pardam['key']!='')?$pardam['key']:null;
+        $query_pardam['sort'] = ($pardam['sort']!='')?$pardam['sort']:null;
+
+        $queryBulder = Products::query(); 
+        if (isset($query_pardam['key']) && $query_pardam['key'] != null) {
+            $queryBulder->where('name_product', 'like', '%'.$query_pardam['key'].'%');
+        }
+        if (isset($query_pardam['sort']) && $query_pardam['sort'] != null) {
+            switch ($query_pardam['sort']) {
+                case 0:
+                    $queryBulder->orderBy('name_product', 'ASC');
+                    break;
+                case 1:
+                    $queryBulder->orderBy('name_product', 'DESC');
+                    break;  
+                case 2:
+                    $queryBulder->orderBy('sale', 'ASC');
+                    break;
+                case 3:
+                    $queryBulder->orderBy('sale', 'DESC');
+                    break;             
+                default:
+                    # code...
+                    break;
+            }
+         
+        }
+        $resurt = $queryBulder->paginate(12);
+        return $resurt;
     }
 }
