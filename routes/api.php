@@ -26,17 +26,14 @@ Route::post('products/delete-multiple-products', 'Api\ProductController@deleteMu
 Route::apiResource('/category', 'Api\CategoryController');
 Route::get('/get-all-category', 'Api\CategoryController@getAllCateGory');
 
-// Route::post('/login', 'Api\AuthController@login');
-
-// Route::get('/user', 'Api\AuthController@user');
-
 Route::group([
     'prefix' => 'auth'
 ], function () {
+    Route::get('/get-all-user', 'Api\AuthController@getAllUser');
     Route::post('/login', 'Api\AuthController@login');
     Route::post('/create', 'Api\AuthController@signup');
     Route::get('/logout', 'Api\AuthController@logout');
-
+    Route::get('/cap-nhat-quyen/{id}', 'Api\AuthController@changePermission');
     Route::group([
       'middleware' => 'auth:api'
     ], function() {
@@ -44,3 +41,6 @@ Route::group([
         Route::get('/user', 'Api\AuthController@user');
     });
 });
+
+Route::post('checkout', 'Api\CheckOutController@thanhToan');
+Route::get('donhang', 'Api\CheckOutController@donHang');

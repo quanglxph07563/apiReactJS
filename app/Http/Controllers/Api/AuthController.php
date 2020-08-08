@@ -14,6 +14,7 @@ class AuthController extends Controller
         $user = new User([
             'name' => $signupRequest->name,
             'email' => $signupRequest->email,
+            'phone' => $signupRequest->phone,
             'password' => bcrypt($signupRequest->password)
         ]);
         $user->save();
@@ -32,7 +33,7 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
         if(!Auth::attempt($credentials))
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Tài khoản hoặc mật khẩu không đúng'
             ], 401);
         $user = $request->user();
         $tokenResult = $user->createToken('Personal Access Token');
@@ -59,5 +60,22 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
+    }
+
+    public function getAllUser()
+    {
+       return User::all();
+    }
+
+    public function changePermission($id)
+    {
+        $user = User::find($id);
+        if($user->permission == 2){
+            $user->permission = 1;
+        }else{
+            $user->permission = 2;
+        }
+        $user->save();
+        return 'thành công';
     }
 }
