@@ -32,7 +32,7 @@ class ProductController extends Controller
         if (isset($query_pardam['key']) && $query_pardam['key'] != null) {
             $queryBulder->where('name_product', 'like', '%'.$query_pardam['key'].'%');
         }
-        $resurt = $queryBulder->paginate($query_pardam['page_size']);
+        $resurt = $queryBulder->orderBy('id', 'desc')->paginate($query_pardam['page_size']);
         foreach ($resurt as $value) {
             if($value->idCategory == 0){
                 $value->tendm ='Chưa có danh mục';
@@ -155,5 +155,16 @@ class ProductController extends Controller
         }
         $resurt = $queryBulder->paginate(12);
         return $resurt;
+    }
+
+    public function totalProduct()
+    {
+        return Products::sum('amount');
+    }
+
+    public function getSanPhamCungDanhMuc($id)
+    {
+        $id_dm = Products::find($id)->category->id;
+        return Products::inRandomOrder()->where('idCategory',$id_dm)->where('id', '<>', $id)->get()->take(5);
     }
 }

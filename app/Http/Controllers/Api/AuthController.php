@@ -64,7 +64,7 @@ class AuthController extends Controller
 
     public function getAllUser()
     {
-       return User::all();
+       return User::orderBy('id', 'desc')->get();
     }
 
     public function changePermission($id)

@@ -10,7 +10,8 @@ class Orders extends Model
     protected $fillable=[
         'id_user',
         'total_price',
-        'address'
+        'address',
+        'total_product'
     ];
     public function orderDetail()
     {

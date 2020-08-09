@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Product;
+namespace App\Http\Requests\ArticleCategorys;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class updateProduct extends FormRequest
+class updateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,13 @@ class updateProduct extends FormRequest
     public function rules()
     {
         return [
-            'sale' => 'Lte:price',
-            'detail' => 'required'
+            'name_category' => 'unique:article_categories,name_category,'.request()->id_danhmuc
         ];
     }
-
     public function messages()
     {
         return [
-            'detail.required' => 'Chi tiết sản phẩm không được để trống'
+            'name_category.unique' => 'Tên danh mục bài viết đã tồn tại'
         ];
     }
 }

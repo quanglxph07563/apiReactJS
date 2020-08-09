@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Category;
-use App\Http\Resources\CategoryResource;
-use App\Http\Requests\Category\insertRequest;
-use App\Http\Requests\Category\updateCategory;
+use App\Posts;
+use App\Http\Requests\Posts\insertRequest;
+use App\Http\Requests\Posts\updateRequest;
 
-class CategoryController extends Controller
+class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,18 +17,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $data = Category::orderBy('id', 'desc')->paginate(3);      
-        foreach ($data as $value) {
-            $value->slsp =$value->total_products;
-        }
-        return $data;
-    }
-
-    public function getAllCateGory()
-    {
-        $data = Category::all();      
-        foreach ($data as $value) {
-            $value->slsp =$value->total_products;
+        $data = Posts::orderBy('id','desc')->paginate(5);
+        foreach ($data as $item) {
+           $item->ten_danh_muc = $item->articleCategory->name_category;
         }
         return $data;
     }
@@ -42,8 +32,7 @@ class CategoryController extends Controller
      */
     public function store(insertRequest $insertRequest)
     {
-        $data = Category::create($insertRequest->all());
-        return response()->json($data, 200);  
+        return Posts::create($insertRequest->all());
     }
 
     /**
@@ -54,7 +43,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        return new CategoryResource(Category::find($id));
+        return Posts::find($id);
     }
 
     /**
@@ -64,11 +53,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(updateCategory $updateCategory, $id)
+    public function update(updateRequest $updateRequest, $id)
     {
-        unset($updateCategory['id_danhmuc']);
-
-        return Category::where('id', $id)->update($updateCategory->all());
+        return Posts::find($id)->update($updateRequest->all());
     }
 
     /**
@@ -79,6 +66,21 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        return  Category::find($id)->delete();
+        return Posts::find($id)->delete();
+
+    }
+
+    public function totalPosts()
+    {
+        return Posts::count('id');
+    }
+
+    public function getPostsDanhMuc($id)
+    {
+       if($id==0){
+            return Posts::paginate(5);
+       }else{
+        return Posts::where('id_article_categories',$id)->paginate(5);
+       }
     }
 }

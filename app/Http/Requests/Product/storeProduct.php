@@ -24,7 +24,7 @@ class storeProduct extends FormRequest
     public function rules()
     {
         return [
-            'sale' => 'Lt:price',
+            'sale' => 'Lte:price',
             'detail' => 'required'
         ];
     }

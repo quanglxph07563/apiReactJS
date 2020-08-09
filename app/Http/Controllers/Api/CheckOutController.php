@@ -13,6 +13,11 @@ class CheckOutController extends Controller
     {
         $data = $request->all();
         $order_detail =json_decode($data['order_detail']);
+        $slsp=0;
+        foreach ($order_detail as $item) {
+          $slsp+=$item->sl;
+        }
+        $data['total_product'] = $slsp;
         unset($data['order_detail']);
 
         $order = Orders::create($data);
@@ -29,7 +34,7 @@ class CheckOutController extends Controller
 
     public function donHang()
     {
-       $data_order = Orders::all();
+       $data_order = Orders::where('status',0)->get();
        foreach ($data_order as $key => $value) {
          $value->name_user = $value->user->name;
          $value->phone = $value->user->phone;
@@ -42,5 +47,39 @@ class CheckOutController extends Controller
          }
        }
        return $data_order;
+    }
+    public function donHangDaPheDuyet()
+    {
+       $data_order = Orders::where('status',1)->get();
+       foreach ($data_order as $key => $value) {
+         $value->name_user = $value->user->name;
+         $value->phone = $value->user->phone;
+         $value->email = $value->user->email;
+         $value->detail = $value->orderDetail;
+         foreach ($value->detail as $key => $item) {
+            $item->name_product = $item->products->name_product;
+            $item->images = $item->products->images;
+            $item->price = $item->products->sale;
+         }
+       }
+       return $data_order;
+    }
+
+    public function changeStatusDonHang($id)
+    {
+       $data = Orders::find($id);
+       $data->status = 1;
+       $data->save();
+       return 'thành công';
+    }
+
+    public function getTotalPrice()
+    {
+      return Orders::where('status',1)->sum('total_price');
+    }
+
+    public function sanPhamDaBan()
+    {
+      return Orders::where('status',1)->sum('total_product');
     }
 }

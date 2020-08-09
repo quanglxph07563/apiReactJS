@@ -13,6 +13,7 @@ class Products extends Model
         'price',
         'sale',
         'amount',
+        'short_description',
         'detail',
         'view',
         'idCategory'
